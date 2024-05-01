@@ -7,6 +7,8 @@ const int INF = 1e9+10;
 vector<pair<int,int>> graph[N]; 
 
 set<pair<int,int>> st;
+vector<int> visited(N,0);
+vector<int> dist(N,INF);
 map<int,pair<int,int>> nodeStore;
 stack<int> path;
 
@@ -29,18 +31,24 @@ void dfs(int vertex){
 } 
 
 
+void relax(int v, int child_v,int wt){
+    if(dist[v] + wt < dist[child_v]){
+      dist[child_v] = dist[v] + wt;
+      st.insert({dist[child_v] , child_v});
+      //nodeStore.insert({child_v, dist[child_v]});
+      nodeStore[child_v] = {v,wt};
+    }
+}
+
 void dijkstra (int source, int nodeNum){
   
   for(int i=1 ; i<=nodeNum ; i++){
     nodeStore[i] = {404,404};
   }
-  
-  vector<int> visited(N,0);
-  vector<int> distance(N,INF);
-  
+
   st.insert({0,source});
   nodeStore[source] = {-1,0};
-  distance[source] = 0;
+  dist[source] = 0;
   
   while(st.size() > 0){
     auto node = *st.begin();
@@ -61,13 +69,8 @@ void dijkstra (int source, int nodeNum){
     for(auto child: graph[v]){
       int child_v = child.first;
       int wt = child.second;
-      
-      if(distance[v] + wt < distance[child_v]){
-        distance[child_v] = distance[v] + wt;
-        st.insert({distance[child_v] , child_v});
-        //nodeStore.insert({child_v, distance[child_v]});
-        nodeStore[child_v] = {v,wt};
-      }
+
+      relax(v,child_v,wt);
     }
   }
 }
@@ -130,7 +133,7 @@ int main() {
         cout << " " << path.top() << " ->";
         path.pop();
       }
-      cout << "< " << endl;
+      cout << ">| " << endl;
       
       cout << "total path weight: " << weightSum << endl;
     }
@@ -149,7 +152,7 @@ int main() {
 3 6 3
 1 7 3
 7 6 4
-8 4
+8 7
 */
 
 
