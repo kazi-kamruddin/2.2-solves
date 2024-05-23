@@ -2,11 +2,13 @@
 using namespace std;
 
 const int N = 1e3+10; 
-const int INF = 1e2+69; 
-
-int node,edge,source;  
-bool negCycle = false;
+const int INF = 1e9+10; 
+ 
+int source,node,edge;  
 vector<pair<int,int>> graph[N]; 
+
+priority_queue<pair<int,int>> st;
+vector<int> visited(N,0);
 
 int distanceFromSource[N];
 int predecessor[N];
@@ -20,44 +22,41 @@ void singleSourceInit(int source){
 }
 
 void relax(int v, int child_v,int wt){
-    if((distanceFromSource[v] + wt) < distanceFromSource[child_v]){
+    if(distanceFromSource[v] + wt < distanceFromSource[child_v]){
       distanceFromSource[child_v] = distanceFromSource[v] + wt;
+      st.push({distanceFromSource[child_v] , child_v});
       predecessor[child_v] = v;
     }
 }
 
-void checkNegCycle(){
-    for(int v=1 ; v<=node ; v++){
-      for(auto child : graph[v]){
-        int child_v = child.first;
-        int wt = child.second;
-
-        //relax(j,child_v,wt);
-        if((distanceFromSource[v] + wt) < distanceFromSource[child_v]){
-            negCycle = true;
-            break;
-        }
-      }
-    }
-
-    if(negCycle)
-      cout << "negative cycle exists." << endl << endl;
-    else
-      cout << "there isn't any negative cycle." << endl << endl;
-}
-
-void bellmanFord(int source){
-
+void dijkstra (int source){
+  
   singleSourceInit(source);
 
-  for(int i=0 ; i<edge-1 ; i++){
-    for(int j=1 ; j<=node ; j++){
-      for(auto child : graph[j]){
-        int child_v = child.first;
-        int wt = child.second;
+  st.push({0,source});
   
-        relax(j,child_v,wt);
-      }
+  while(st.size() > 0){
+    pair<int,int> node = st.top();
+    int v = node.second;
+    int v_dist = node.first;
+    
+    // auto it = st.top();
+    // int element = (*it).second;
+    //cout << element << endl;
+    
+    st.pop();
+    
+    if(visited[v])
+      continue;
+      
+    visited[v] = 1;
+
+    for(int i=0 ; i<graph[v].size() ; i++){
+      pair<int,int> child = graph[v][i]; 
+      int child_v = child.first;
+      int wt = child.second;
+
+      relax(v,child_v,wt);
     }
   }
 }
@@ -90,21 +89,19 @@ int main() {
     // cout << endl;
     
     cin >> source;
-    bellmanFord(source);
-
-    checkNegCycle();
+    dijkstra(source);
 
     // for (int i = 1; i <= node; ++i){
     //   cout <<"for "<<i<<" : "<< distanceFromSource[i] <<" "<< predecessor[i] << endl;
     // }
-
+    
     for(int i=1;i<=node;i++){
         cout << i << " : ";
         if(distanceFromSource[i] == INF){
           cout << "unreachable from source." << endl;
         }
         else{
-          cout<< " cost: "<<distanceFromSource[i]<<" , Path: ";
+          cout<<" cost: "<<distanceFromSource[i]<<" , Path: ";
           pathFinder(i);
           cout<<endl;
         }
@@ -123,17 +120,6 @@ int main() {
 4 6 -1
 5 6 3
 1
-*/
-
-/*
-6 7
-1 2 5
-2 4 2
-2 3 1
-3 5 1
-5 4 -1
-4 6 2
-6 5 -3
 */
 
 

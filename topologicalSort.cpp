@@ -34,7 +34,7 @@ int main() {
       graph[v1].push_back({v2,wt});
     } 
   
-    for(int i=1 ; i<=node ; i++){  
+    for(int i=0 ; i<node ; i++){  
       cout << i << " : ";  
       for(int j=0 ; j<graph[i].size() ; j++){  
             cout << graph[i][j].first << " ";  
@@ -43,7 +43,7 @@ int main() {
     } 
     cout << endl;
 
-    for(int i=1 ; i<=node ; i++){
+    for(int i=0 ; i<node ; i++){
       if(!visDFS[i])
         dfs(i);
     }
